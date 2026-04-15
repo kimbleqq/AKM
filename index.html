@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMY & KIMBLE 观影打分</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { max-width: 900px; margin: 20px auto; padding: 0 20px; background: #f8f9fa; }
+        .box { background: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        h2 { margin-bottom: 20px; color: #2c3e50; border-left: 4px solid #28a745; padding-left: 10px; }
+        /* 转盘样式适配100等分 */
+        .turntable-wrap { text-align: center; margin: 20px 0; }
+        #turntable { width: 320px; height: 320px; border-radius: 50%; border: 10px solid #28a745; margin: 0 auto; position: relative; overflow: hidden; 
+            background: conic-gradient(
+                #ff6b6b 0% 1%, #ff8787 1% 2%, #ffa8a8 2% 3%, #ffc9c9 3% 4%, #ffe8e8 4% 5%,
+                #4ecdc4 5% 6%, #5ed8d0 6% 7%, #6ee2da 7% 8%, #7eebe3 8% 9%, #8ef3ec 9% 10%,
+                #45b7d1 10% 11%, #55c0d7 11% 12%, #65c9dd 12% 13%, #75d2e3 13% 14%, #85dbe9 14% 15%,
+                #96ceb4 15% 16%, #a2d5bd 16% 17%, #addbc6 17% 18%, #b9e2cf 18% 19%, #c4e9d8 19% 20%,
+                #ffeaa7 20% 21%, #ffefb9 21% 22%, #fff4cb 22% 23%, #fff8dd 23% 24%, #fffcef 24% 25%,
+                #dda0dd 25% 26%, #e1ade1 26% 27%, #e5b9e5 27% 28%, #e9c5e9 28% 29%, #edd1ed 29% 30%,
+                #74b9ff 30% 31%, #81c0ff 31% 32%, #8ec7ff 32% 33%, #9bceff 33% 34%, #a8d5ff 34% 35%,
+                #fd79a8 35% 36%, #fd87b0 36% 37%, #fd95b8 37% 38%, #fda3c0 38% 39%, #fdb1c8 39% 40%,
+                #fdcb6e 40% 41%, #fdd17f 41% 42%, #fdd790 42% 43%, #fddd9f 43% 44%, #fde3b0 44% 45%,
+                #6c5ce7 45% 46%, #7a6be8 46% 47%, #8879e9 47% 48%, #9687ea 48% 49%, #a495eb 49% 50%,
+                #ff6b6b 50% 51%, #ff8787 51% 52%, #ffa8a8 52% 53%, #ffc9c9 53% 54%, #ffe8e8 54% 55%,
+                #4ecdc4 55% 56%, #5ed8d0 56% 57%, #6ee2da 57% 58%, #7eebe3 58% 59%, #8ef3ec 59% 60%,
+                #45b7d1 60% 61%, #55c0d7 61% 62%, #65c9dd 62% 63%, #75d2e3 63% 64%, #85dbe9 64% 65%,
+                #96ceb4 65% 66%, #a2d5bd 66% 67%, #addbc6 67% 68%, #b9e2cf 68% 69%, #c4e9d8 69% 70%,
+                #ffeaa7 70% 71%, #ffefb9 71% 72%, #fff4cb 72% 73%, #fff8dd 73% 74%, #fffcef 74% 75%,
+                #dda0dd 75% 76%, #e1ade1 76% 77%, #e5b9e5 77% 78%, #e9c5e9 78% 79%, #edd1ed 79% 80%,
+                #74b9ff 80% 81%, #81c0ff 81% 82%, #8ec7ff 82% 83%, #9bceff 83% 84%, #a8d5ff 84% 85%,
+                #fd79a8 85% 86%, #fd87b0 86% 87%, #fd95b8 87% 88%, #fda3c0 88% 89%, #fdb1c8 89% 90%,
+                #fdcb6e 90% 91%, #fdd17f 91% 92%, #fdd790 92% 93%, #fddd9f 93% 94%, #fde3b0 94% 95%,
+                #6c5ce7 95% 96%, #7a6be8 96% 97%, #8879e9 97% 98%, #9687ea 98% 99%, #a495eb 99% 100%
+            );
+            transition: transform 3.2s cubic-bezier(0.17, 0.67, 0.13, 0.99);
+        }
+        #turntable::before { content: ""; position: absolute; top: -18px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 18px solid transparent; border-right: 18px solid transparent; border-top: 30px solid #e74c3c; z-index: 10; }
+        .spin-btn { background: #28a745; color: white; border: none; padding: 14px 35px; border-radius: 30px; font-size: 17px; margin-top: 18px; cursor: pointer; }
+        .spin-btn:hover { background: #218838; }
+        /* 10项打分样式 */
+        .score-item-row { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; }
+        .score-item-row label { width: 120px; font-weight: 500; color: #34495e; }
+        .score-item-row input { flex: 1; margin-left: 15px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; width: 100%; }
+        .submit-btn { background: #28a745; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-size: 17px; margin-top: 20px; cursor: pointer; }
+        .submit-btn:hover { background: #218838; }
+        /* 同步排行榜样式 */
+        .rank-item { background: #f8f9fa; padding: 18px; margin: 12px 0; border-radius: 8px; border-left: 4px solid #28a745; }
+        .rank-item h3 { color: #2c3e50; margin-bottom: 8px; }
+        .rank-item p { color: #7f8c8d; font-size: 14px; margin: 4px 0; }
+    </style>
+</head>
+<body>
+    <!-- 1. 随机转盘区域（豆瓣TOP250前100部+优化转动逻辑） -->
+    <div class="box">
+        <h2>🎡 随机选电影转盘（豆瓣TOP250前100）</h2>
+        <div class="turntable-wrap">
+            <div id="turntable"></div>
+            <button class="spin-btn" onclick="spinTurntable()">点击转动选电影</button>
+            <p id="spin-result" style="margin-top:12px; font-size:17px; color:#e74c3c; font-weight:500;"></p >
+        </div>
+    </div>
+
+    <!-- 2. 10项打分区域（你指定的维度不变） -->
+    <div class="box">
+        <h2>⭐ 电影10项评分（每项0-10分）</h2>
+        <input type="text" id="movieName" placeholder="请输入电影名称（转盘选中可自动填充）" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; border:1px solid #ddd;">
+        <div class="score-item-row"><label>故事完整度：</label><input type="number" id="score1" min="0" max="10" placeholder="0-10"></div>
+        <div class="score-item-row"><label>叙事逻辑：</label><input type="number" id="score2" min="0" max="10" placeholder="0-10"></div>
+        <div class="score-item-row"><label>主题深度：</label><input type="number" id="score3" min="0" max="10" placeholder="0-10"></div>
+        <div class="score-item-row"><label>人物塑造：</label><input type="number" id="score4" min="0" max="10" placeholder="0-10"></div>
+        <div class="score-item-row"><label>演员演技：</label><input type="number" id="score5" min="0" max="10" placeholder="0-10"></div>
+        <div class="score-item-row"><label>拍摄手法：</label><input type="number" id="score6" min="0" max="10" placeholder="0-10"></div>
+        <div class="score-item-row"><label>画面美学：</label><input type="number" id="score7" min="0" max="10" placeholder="0-10"></div>
+        <div class="score-item-row"><label>配乐音效：</label><input type="number" id="score8" min="0" max="10" placeholder="0-10"></div>
+        <div class="score-item-row"><label>节奏流畅度：</label><input type="number" id="score9" min="0" max="10" placeholder="0-10"></div>
+        <div class="score-item-row"><label>情感共鸣：</label><input type="number" id="score10" min="0" max="10" placeholder="0-10"></div>
+        <button class="submit-btn" onclick="saveScore()">✅ 保存评分并同步到云端</button>
+    </div>
+
+    <!-- 3. 全设备同步排行榜（完全保留不变） -->
+    <div class="box">
+        <h2>🏆 实时评分排行榜（所有设备同步）</h2>
+        <div id="syncRankList"></div>
+    </div>
+
+    <script>
+        // ========== 【你必须改这里3个信息，其他不用动】 ==========
+        const GITHUB_USER = "你的GitHub用户名"; // 替换成你登录GitHub的账号名
+        const GITHUB_REPO = "你的仓库名"; // 替换成你上传文件的仓库名
+        const GITHUB_TOKEN = "你的GitHub个人令牌"; // 替换成你刚生成的令牌
+        const DATA_FILE = "movie_scores.json"; // 云端数据文件名，固定不用改
+        // ======================================================
+
+        // ---------------------- 豆瓣电影TOP250前100部完整官方榜单 ----------------------
+        const movieList = [
+            "肖申克的救赎","霸王别姬","阿甘正传","这个杀手不太冷","泰坦尼克号",
+            "千与千寻","美丽人生","星际穿越","楚门的世界","忠犬八公的故事",
+            "盗梦空间","三傻大闹宝莱坞","海上钢琴师","辛德勒的名单","教父",
+            "龙猫","让子弹飞","怦然心动","疯狂动物城","触不可及",
+            "寻梦环游记","当幸福来敲门","蝙蝠侠：黑暗骑士","活着","哈利·波特与魔法石",
+            "指环王3：王者归来","我不是药神","乱世佳人","天空之城","大话西游之大圣娶亲",
+            "哈尔的移动城堡","指环王1：护戒使者","飞屋环游记","罗马假日","搏击俱乐部",
+            "两杆大烟枪","寻梦环游记","幽灵公主","侧耳倾听","魔女宅急便",
+            "猫的报恩","岁月神偷","岁月童话","起风了","红猪",
+            "辉夜姬物语","萤火之森","秒速5厘米","言叶之庭","你的名字",
+            "天气之子","东京教父","千年女优","未麻的部屋","红辣椒",
+            "大都会","阿凡达","侏罗纪公园","狮子王","海底总动员",
+            "机器人总动员","超能陆战队","头脑特工队","怪兽电力公司","怪兽大学",
+            "超人总动员","美食总动员","心灵奇旅","哪吒之魔童降世","姜子牙",
+            "大圣归来","白蛇：缘起","流浪地球","流浪地球2","战狼2",
+            "红海行动","长津湖","我和我的祖国","我和我的家乡","你好，李焕英",
+            "满江红","悬崖之上","一步之遥","邪不压正","非诚勿扰",
+            "非诚勿扰2","泰囧","港囧","夏洛特烦恼","西虹市首富",
+            "飞驰人生","疯狂的石头","疯狂的赛车","无人区","心花路放",
+            "教父2","低俗小说","七武士","千钧一发","少年派的奇幻漂流"
+        ];
+
+        // ---------------------- 优化后转盘转动逻辑（自然流畅不变） ----------------------
+        let isSpinning = false;
+        function spinTurntable() {
+            if(isSpinning) return;
+            isSpinning = true;
+            const turntable = document.getElementById("turntable");
+            // 转6-10圈，角度随机，加速减速符合物理逻辑
+            const randomTurns = 6 + Math.floor(Math.random() * 4); 
+            const randomDeg = randomTurns * 360 + Math.floor(Math.random() * 360);
+            turntable.style.transform = `rotate(${randomDeg}deg)`;
+            
+            // 转盘结束后显示TOP排名+电影名
+            setTimeout(() => {
+                const index = Math.floor((randomDeg % 360) / 3.6); // 100等分，每份3.6度
+                const selectedMovie = movieList[index];
+                document.getElementById("spin-result").innerText = `🎉 TOP${index+1}：${selectedMovie}`;
+                document.getElementById("movieName").value = selectedMovie;
+                isSpinning = false;
+            }, 3200); // 匹配转动时长
+        }
+
+        // ---------------------- 云端同步核心逻辑（完全保留不变） ----------------------
+        // 1. 从云端拉取所有评分（打开页面自动加载最新数据）
+        async function loadSyncScores() {
+            try {
+                const res = await fetch(`https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${DATA_FILE}`);
+                if (!res.ok) return [];
+                return await res.json();
+            } catch (e) {
+                return [];
+            }
+        }
+
+        // 2. 保存评分+同步到云端（原版逻辑不变）
+        async function saveScore() {
+            // 先获取10项打分+电影名
+            const movieName = document.getElementById("movieName").value.trim();
+            const score1 = document.getElementById("score1").value;
+            const score2 = document.getElementById("score2").value;
+            const score3 = document.getElementById("score3").value;
+            const score4 = document.getElementById("score4").value;
+            const score5 = document.getElementById("score5").value;
+            const score6 = document.getElementById("score6").value;
+            const score7 = document.getElementById("score7").value;
+            const score8 = document.getElementById("score8").value;
+            const score9 = document.getElementById("score9").value;
+            const score10 = document.getElementById("score10").value;
+            // 校验必填项
+            if (!movieName || !score1 || !score2 || !score3 || !score4 || !score5 || !score6 || !score7 || !score8 || !score9 || !score10) {
+                alert("请填全电影名和10项评分！");
+                return;
+            }
+            // 计算平均分
+            const totalScore = (Number(score1)+Number(score2)+Number(score3)+Number(score4)+Number(score5)+Number(score6)+Number(score7)+Number(score8)+Number(score9)+Number(score10))/10;
+            
+            // 同步逻辑：先拉云端最新数据，再新增评分，避免覆盖
+            let allScores = await loadSyncScores();
+            allScores.push({
+                movieName,
+                detailScores: [score1,score2,score3,score4,score5,score6,score7,score8,score9,score10],
+                avgScore: totalScore.toFixed(1),
+                submitTime: new Date().toLocaleString()
+            });
+
+            // 提交到GitHub云端
+            const fileSha = await getFileSha();
+            await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}`, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `token ${GITHUB_TOKEN}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: `新增评分：${movieName}`,
+                    content: btoa(JSON.stringify(allScores, null, 2)),
+                    sha: fileSha
+                })
+            });
+
+            alert("✅ 评分保存成功！手机打开链接刷新就能看到同步数据");
+            // 清空输入框
+            document.getElementById("movieName").value = "";
+            document.querySelectorAll('.score-item-row input').forEach(input => input.value = "");
+            // 刷新同步排行榜
+            renderSyncRank();
+        }
+
+        // 辅助：获取云端文件版本，防止提交失败
+        async function getFileSha() {
+            try {
+                const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}`, {
+                    headers: { "Authorization": `token ${GITHUB_TOKEN}` }
+                });
+                const data = await res.json();
+                return data.sha;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // 3. 渲染全设备同步排行榜（完全保留）
+        async function renderSyncRank() {
+            const allScores = await loadSyncScores();
+            const rankList = document.getElementById("syncRankList");
+            if(allScores.length === 0) {
+                rankList.innerHTML = "<p style='text-align:center; color:#999;'>暂无评分，快来提交第一条吧！</p >";
+                return;
+            }
+            // 按平均分从高到低排序
+            const sortedScores = allScores.sort((a,b) => Number(b.avgScore) - Number(a.avgScore));
+            // 渲染
+            rankList.innerHTML = sortedScores.map((item, index) => `
+                <div class="rank-item">
+                    <h3>第${index+1}名｜${item.movieName}</h3>
+                    <p>综合平均分：${item.avgScore}分</p >
+                    <p>10项打分：${item.detailScores.join("分 / ")}分</p >
+                    <p>提交时间：${item.submitTime}</p >
+                </div>
+            `).join("");
+        }
+
+        // 页面打开自动加载同步排行榜
+        window.onload = renderSyncRank;
+    </script>
+</body>
+</html>
